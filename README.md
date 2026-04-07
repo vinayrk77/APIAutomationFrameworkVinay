@@ -1,140 +1,141 @@
-API Automation RestAssured (in Java)
-Author - Vinay Karanjavkar
-API Automation Framework with the CRUD of Restful Booker.
+# REST Assured API Automation Framework
 
-mvn test -Dsurefire.suiteXmlFiles=testng.xml
+A robust API test automation framework built with Java and REST Assured, covering full CRUD operations, auth token flows, schema validation, and CI/CD integration via Jenkins.
 
-Screenshot 2023-10-31 at 12 25 55 PM
-Tech Stack
-Java ( JDK > 22)
-Rest Assured
-Apache POI, TestNG, Maven.
-AssertJ (Advance assertions)
-Jackson API and GSON
-Log4j
-Allure Report
-Full Folder Structure(Hybrid) Framework.
-Jenkins File
-API Framework Important Components
-Screenshot 2024-06-29 at 12 44 29
+---
 
-Running via CI/CD
-Screenshot 2023-10-31 at 12 26 07 PM
-Run
+## Tech Stack
 
-Basic Create Test
-Install Maven
-add config to run the suite or testng
-<plugins>
-<plugin>
-<groupId>org.apache.maven.plugins</groupId>
-<artifactId>maven-surefire-plugin</artifactId>
-<version>3.3.0</version>
-<configuration>
-<suiteXmlFiles>
-<suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
-</suiteXmlFiles>
-</configuration>
-</plugin>
-</plugins>
-</build>
-to pom.xml
+| Layer | Tools |
+| Language | Java (JDK 22+) |
+| API Automation | REST Assured |
+| Test Framework | TestNG |
+| Build Tool | Maven |
+| Assertions | AssertJ |
+| Serialization | Jackson API, GSON |
+| Test Data | Apache POI (Excel) |
+| Logging | Log4j |
+| Reporting | Allure Reports |
+| CI/CD | Jenkins |
 
+---
+
+## Framework Architecture
+
+```
+src/
+├── main/java/
+│   ├── api/            # Reusable request builders (BookingApi, AuthApi)
+│   ├── models/         # POJO classes for request/response (BookingPojo, TokenPojo)
+│   ├── utils/          # ConfigReader, ExcelUtils, JsonUtils
+│   └── base/           # BaseTest — base URI, request spec setup
+└── test/java/
+    └── tests/          # TestNG test classes (CRUD, Integration, Auth)
+```
+
+---
+
+## Key Features
+
+- Full CRUD coverage — Create, Read, Update, Delete on the [Restful Booker API](https://restful-booker.herokuapp.com)
+- Auth token flows — Token creation, injection into headers, and expiry handling
+- Schema validation — JSON response schema validated using JSON Schema files
+- AssertJ assertions — Fluent, readable assertions on status codes, response bodies, and headers
+- POJO-based serialization — Jackson API for clean request/response deserialization
+- Data-driven tests — TestNG `@DataProvider` with Excel input via Apache POI
+- Integration scenarios — End-to-end flows: Create → Update → Verify → Delete
+- Allure Reports — Step-level HTML reports with request/response logging
+- Jenkins CI/CD — Jenkinsfile for automated regression on every build
+
+---
+
+## API Coverage
+
+| Endpoint | Method | Test Scenario |
+| /auth | POST | Generate auth token |
+| /booking | POST | Create booking |
+| /booking/{id} | GET | Get booking by ID |
+| /booking/{id} | PUT | Full update with auth |
+| /booking/{id} | PATCH | Partial update with auth |
+| /booking/{id} | DELETE | Delete booking with auth |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Java 22+
+- Maven
+- Allure CLI (`brew install allure` or see [Allure docs](https://docs.qameta.io/allure/))
+
+### Clone & Install
+
+bash
+git clone https://github.com/vinayrk77/APIAutomationFrameworkVinay.git
+cd APIAutomationFrameworkVinay
+mvn clean install -DskipTests
+
+
+### Run Tests
+
+bash
+# Full CRUD suite
 mvn clean test -DsuiteXmlFile=testng.xml
 
-Parallel Execution
-To run tests in parallel, add the parallel attribute to your testng.xml file:
-
-<suite name="All Test Suite" parallel="methods" thread-count="2">
-
-Integration Test (Create BookinG and Create Token , Update and Delete Booking)
+# Integration scenarios (Create → Update → Delete)
 mvn clean test -DsuiteXmlFile=testng-integration.xml
 
-Allure Report Generated.
+# End-to-end e2e suite
+mvn clean test -DsuiteXmlFile=testing_e2e1.xml
+
+### Generate Allure Report
+
+bash
 allure serve allure-results/
 
-image
+---
 
-Certainly! I'll guide you through the steps to install Allure and generate a report for a Java project using TestNG. Here's a step-by-step process:
+## Integration Test Flow
 
-1. Install Allure
-   First, you need to install Allure Command Line Tool. If you're using a Mac, you can use the following Brew command:
+The integration suite tests real end-to-end booking scenarios:
 
-brew install allure
-For other operating systems, please refer to the official Allure documentation for installation instructions.
+1. POST /auth          → Get token
+2. POST /booking       → Create booking, capture ID
+3. PUT  /booking/{id}  → Update name/dates with token
+4. GET  /booking/{id}  → Assert updates persisted
+5. DELETE /booking/{id}→ Delete with token
+6. GET  /booking/{id}  → Assert 404 (booking gone)
 
-2. Set up your Java project
-   Ensure you have a Java project set up with TestNG. If not, create a new Maven project and add the necessary dependencies.
+---
 
-3. Add Allure dependencies
-   Add the following dependencies to your pom.xml file:
+## CI/CD with Jenkins
 
-<dependency>
-    <groupId>io.qameta.allure</groupId>
-    <artifactId>allure-testng</artifactId>
-    <version>2.13.0</version>
-</dependency>
-4. Configure Allure in your project
-Update the <build> section of your pom.xml to include the Allure Maven plugin:
+The Jenkinsfile defines a pipeline that:
 
-<build>
-    <plugins>
-        <plugin>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-maven</artifactId>
-            <version>2.10.0</version>
-            <configuration>
-                <reportVersion>2.13.0</reportVersion>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
-5. Run your tests
-Execute your TestNG tests using Maven:
+1. Pulls the latest code from GitHub
+2. Runs mvn clean test against the full suite
+3. Publishes Allure Reports as a build artifact
+4. Marks build as failed if any test fails
 
-mvn clean test
-This will run your tests and generate the Allure results in the target/allure-results directory.
+bash
+# Trigger manually
+mvn clean test -DsuiteXmlFile=testng.xml
 
-6. Generate the Allure report
-   After running your tests, use the following command to generate the Allure report:
 
-allure generate target/allure-results --clean -o allure-report
-This command will create an allure-report folder containing the generated report.
+## Parallel Execution
 
-7. View the report
-   To view the report, you can use the following command:
+Configure parallel execution in testng.xml:
 
-allure open allure-report
-This will start a local web server and open the report in your default browser.
+xml
+<suite name="API Suite" parallel="methods" thread-count="3">
 
-Additional Tips
-You can use the @Severity annotation to indicate the importance of your tests.
-Allure supports attaching screenshots, which can be useful for UI tests.
-For more advanced configurations and features, refer to the official Allure documentation.
-By following these steps, you should be able to successfully install Allure, run your TestNG tests, and generate a comprehensive Allure report for your Java project.
 
-Try these Cases also
-POSTMAN Assignments Assignment 1
+---
 
-Create the Collections for the This Test cases :
+## Author
 
-App - Restful Booker with(Auth)
-
-Create a Booking, Update the Booking Name, Get the Booking by Id and verify.
-Create a Booking, Delete the Booking with Id and Verify using GET request that it should not exist.
-Get an Existing Booking from Get All Bookings Ids , Update a Booking and Verify using GET by id.
-Create a BOOKING, Delete It
-Invalid Creation - enter a wrong payload or Wrong JSON.
-Trying to Update on a Delete Id
-Test for the Single Req
-
-Response
-Status Code
-Headers
-———
-
-Create Collection
-
-RestfulBooker CRUD operation.
-Add from Snippets , Test cases
-Integration Scenarios (Hard Coded)
+**Vinay Karanjavkar** — QA Analyst | Automation Engineer
+- [LinkedIn](https://www.linkedin.com/in/vinaykaranjavkar/)
+- GitHub(https://github.com/vinayrk77)
+- vinayrk26@gmail.com

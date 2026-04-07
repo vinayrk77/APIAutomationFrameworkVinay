@@ -22,7 +22,6 @@ A robust API test automation framework built with Java and REST Assured, coverin
 
 ## Framework Architecture
 
-```
 src/
 ├── main/java/
 │   ├── api/            # Reusable request builders (BookingApi, AuthApi)
@@ -31,7 +30,6 @@ src/
 │   └── base/           # BaseTest — base URI, request spec setup
 └── test/java/
     └── tests/          # TestNG test classes (CRUD, Integration, Auth)
-```
 
 ---
 

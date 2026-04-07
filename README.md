@@ -40,7 +40,7 @@ src/
 - Schema validation — JSON response schema validated using JSON Schema files
 - AssertJ assertions — Fluent, readable assertions on status codes, response bodies, and headers
 - POJO-based serialization — Jackson API for clean request/response deserialization
-- Data-driven tests — TestNG `@DataProvider` with Excel input via Apache POI
+- Data-driven tests — TestNG @DataProvider with Excel input via Apache POI
 - Integration scenarios — End-to-end flows: Create → Update → Verify → Delete
 - Allure Reports — Step-level HTML reports with request/response logging
 - Jenkins CI/CD — Jenkinsfile for automated regression on every build
